@@ -1,0 +1,225 @@
+---
+title: "Project Proposal"
+author: "Team 8"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_document
+
+---
+
+```{r setup, include = FALSE}
+#You do not need to touch this chunk
+#words after "#" sign are treated as comments
+#It is strongly recommanded to use English in r markdown
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#install.packages("ggplot2")    # ggplot2 패키지 설치(한번만 설치하면 됨)
+#install.packages("dplyr")      # dplyr 패키지 설치(한번만 설치하면 됨)
+#install.packages("GGally")     # GGally 패키지 설치(한번만 설치하면 됨)
+#install.packages("gridExtra")  # gridExtra 패키지 설치(한번만 설치하면 됨)
+library(ggplot2)
+library(dplyr)
+library(GGally)
+library(gridExtra)
+```
+
+
+# Rmarkdown template(Title)
+
+
+## 1. 데이터에 대한 설명
+
+### Files
+
+- train.csv : 와인의 성분 및 품질이 담긴 데이터
+- test.csv : 와인의 성분이 담긴 데이터(품질을 예측할 필요)
+
+
+### Columns
+
+- index : 구분자. 말 그대로 번호를 나타내 주는 index이다.
+- quality : 품질. 0에서 10 사이의 숫자로 나타내어져 있다.
+- fixed acidity : 고정산. 적절한 농도일 경우 신선하고 청량한 느낌을 준다.
+- volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도일 경우 식초와 같은 불쾌한 맛을 낸다.
+- citric acid : 시트르산. 산도에 영향을 미치는 것 같다.
+- residual : 잔당. 발효 후 와인 속에 남아있는 당분.
+- chlorides : 염화물. 와인의 짠맛을 좌우한다.
+- free sulfur dioxide : 독립 이산화황. 와인의 보존재로 사용되며 높을 경우 사람에게 안 좋은 영향을 줄 수 있는 것 같다.
+- total sulfur dioxide : 총 이산화황. 독립 이산화황과 차이가 뭘까..??
+- density : 밀도. 와인을 마실 때의 바디감을 결정한다.
+- PH : 수소이온농도. 낮을수록 강한 산성임을 의미한다.
+- sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 건강과 와인의 맛에 영향을 주지 않는다고 한다.
+- alcohol : 도수. 알코올의 농도.
+- type : 종류. 레드 와인인지 화이트 와인인지를 구분.
+
+
+## 2. 연구가설
+
+
+## 3. 각 연구가설과 관련된 탐색적 자료 분석
+
+```{r}
+df = read.csv("data/train.csv", header = TRUE)    # csv file을 df라는 변수에 저장
+head(df)
+```
+
+```{r}
+glimpse(df)    # 변수별로 대략적인 형태를 볼 수 있음
+```
+
+```{r}
+summary(df)    # 최대값, 최소값, 사분위수 등의 기본적인 통계량 확인 가능
+```
+```{r}
+unique(df$type)
+```
+'type' column이 범주형 변수라서 제대로 summary가 되지 않아 unique 함수로 고유값을 체크하였다. white wine과 red wine 두 종류밖에 없음을 확인할 수 있다.
+
+```{r}
+colSums(is.na(df))
+```
+
+결측치는 없음을 확인할 수 있다.
+
+```{r}
+df_sub1 = df[2:8]
+pairs(df_sub1 %>%  sample_n(1000))    # 변수별 산점도행렬 확인
+```
+```{r}
+df_sub2 = df[c(2, 9:13)]
+pairs(df_sub2 %>% sample_n(1000))
+```
+column의 수가 index, type을 제외하고도 12개로 상당히 많아 데이터프레임을 df_sub1과 df_sub2 두 개로 분리시킨 후 산점도행렬을 그려보았다. 각 변수들이 quality에 미치는 영향을 알아보기 위해 quality column은 두 그룹에 모두 포함시켰다.
+
+
+
+```{r}
+ggplot(df, aes(x = residual.sugar, y = quality)) +
+  geom_point()
+```
+
+```{r}
+df %>% ggplot(aes(quality, residual.sugar, group=quality)) +
+  geom_boxplot()
+```
+
+
+
+```{r fig.width = 10, fig.height=7}
+
+
+pl1 = df %>% ggplot(aes(x=quality)) +
+  geom_histogram() +
+  facet_wrap(~ type)
+
+pl2 = df %>% ggplot(aes(x=fixed.acidity)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl3 = df %>% ggplot(aes(x=volatile.acidity)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl4 = df %>% ggplot(aes(x=citric.acid)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl5 = df %>% ggplot(aes(x=residual.sugar)) +    # 그래프가 좀 이상함. outlier 값이 있을 것으로 예상됨.
+  geom_density() +
+  facet_wrap(~ type)
+
+pl6 = df %>% ggplot(aes(x=chlorides)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl7 = df %>% ggplot(aes(x=free.sulfur.dioxide)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl8 = df %>% ggplot(aes(x=total.sulfur.dioxide)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl9 = df %>% ggplot(aes(x=density)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl10 = df %>% ggplot(aes(x=pH)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl11 = df %>% ggplot(aes(x=sulphates)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+pl12 = df %>% ggplot(aes(x=alcohol)) +
+  geom_density() +
+  facet_wrap(~ type)
+
+grid.arrange(pl1, pl2, pl3, pl4, pl5, pl6, pl7, pl8, pl9, pl10, pl11, pl12, nrow=4, ncol=3)
+
+
+```
+
+```{r fig.width= 10, fig.height=20}
+
+box1 <-  df %>% ggplot(aes(quality, fixed.acidity, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box2 <-  df %>% ggplot(aes(quality, volatile.acidity, group=quality)) +    # red 와인의 경우 음의 상관관계
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box3 <- df %>% ggplot(aes(quality, citric.acid, group=quality)) +    # red 와인의 경우 양의 상관관계
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box4 <- df %>% ggplot(aes(quality, residual.sugar, group=quality)) +    # 이상치 때문에 제대로 관측 불가
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box5 <- df %>% ggplot(aes(quality, chlorides, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box6 <- df %>% ggplot(aes(quality, free.sulfur.dioxide, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box7 <- df %>% ggplot(aes(quality, total.sulfur.dioxide, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box8 <- df %>% ggplot(aes(quality, density, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box9 <- df %>% ggplot(aes(quality, pH, group=quality)) +
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box10 <- df %>% ggplot(aes(quality, sulphates, group=quality)) +    # red의 경우 양의 상관관계
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+box11 <- df %>% ggplot(aes(quality, alcohol, group=quality)) +    # 둘 다 대체적으로 양의 상관관계
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red') +
+  facet_wrap(~ type)
+
+grid.arrange(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, nrow=6, ncol=2)
+
+```
+

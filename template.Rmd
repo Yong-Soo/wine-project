@@ -1,0 +1,70 @@
+---
+title: "Project Proposal"
+author: "Cho YongSoo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_document
+
+---
+
+
+
+```{r setup, include = FALSE}
+#You do not need to touch this chunk
+#words after "#" sign are treated as comments
+#It is strongly recommanded to use English in r markdown
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Rmarkdown template(Title)
+
+## 1.Write comments(Section)
+You can write sentences here like MS Word or Hangul. You can also write greek letters like $\alpha$, $\beta$, and $\gamma$ and mathematical symbols like $\Sigma$, $\forall$ and $\propto$ etc. You can find this by googling.
+
+### 1.1 Calculation(Subsection)
+You can calculate something between paragraph using chunks.
+```{r cal}
+round(pi^2/6)
+```
+
+### 1.2 Easy plot
+You can plot something like below:
+```{r plot1}
+x=rnorm(100)
+y=x+rnorm(100,sd=0.5)
+plot(x,y,main="My Simulated Data")
+```
+
+### 1.3 Complex Plot
+```{r plot2, echo=FALSE}
+#echo=FALSE to hide codes
+#results='hide' to hide results
+mu<-10.75
+sig<- .8
+
+par(mar=c(3,3,1,1),mgp=c(1.75,.75,0))
+par(mfrow=c(1,2))
+
+x<- seq(7.9,13.9,length=500)
+plot(x,pnorm(x,mu,sig),type="l",ylab=expression(paste(italic("F"),"(",italic("y"),")")),xlab=
+    expression(italic(y)),lwd=1)
+abline(h=c(0,.5,1),col="gray")
+plot(x,dnorm(x,mu,sig),type="l",ylab=expression(paste(italic("p"),"(",italic("y"),")")),
+xlab=
+  expression(italic(y)),lwd=1)
+abline(v=mu,col="gray")
+```
+
+### 1.3 table
+You can draw table
+```{r table, results='asis'}
+#results='asis' option for xtable package
+library(datasets)
+data(airquality)
+fit=lm(Ozone~Wind+Temp+Solar.R,data=airquality)
+library(xtable)
+#Need to install xtable package before
+xt=xtable(summary(fit))
+print(xt,type="html")
+```
+
