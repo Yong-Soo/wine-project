@@ -40,8 +40,8 @@ library(gridExtra)
 
 - index : 구분자. 말 그대로 번호를 나타내 주는 index이다.
 - quality : 품질. 0에서 10 사이의 숫자로 나타내어져 있다.
-- fixed acidity : 고정산. 적절한 농도일 경우 신선하고 청량한 느낌을 준다.
-- volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도일 경우 식초와 같은 불쾌한 맛을 낸다.
+- fixed acidity : 산도. 적절한 농도일 경우 신선하고 청량한 느낌을 준다.
+- volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도(1.2~1.3g/L)일 경우 식초와 같은 불쾌한 맛을 낸다.
 - citric acid : 시트르산. 산도에 영향을 미치는 것 같다.
 - residual : 잔당. 발효 후 와인 속에 남아있는 당분.
 - chlorides : 염화물. 와인의 짠맛을 좌우한다.
@@ -49,7 +49,7 @@ library(gridExtra)
 - total sulfur dioxide : 총 이산화황. 독립 이산화황과 차이가 뭘까..??
 - density : 밀도. 와인을 마실 때의 바디감을 결정한다.
 - PH : 수소이온농도. 낮을수록 강한 산성임을 의미한다.
-- sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 건강과 와인의 맛에 영향을 주지 않는다고 한다.
+- sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 와인의 맛을 개선하고 신선도를 유지시키며 생동감을 준다.
 - alcohol : 도수. 알코올의 농도.
 - type : 종류. 레드 와인인지 화이트 와인인지를 구분.
 
@@ -63,6 +63,7 @@ library(gridExtra)
 df = read.csv("data/train.csv", header = TRUE)    # csv file을 df라는 변수에 저장
 head(df)
 ```
+
 
 ```{r}
 glimpse(df)    # 변수별로 대략적인 형태를 볼 수 있음
@@ -83,26 +84,25 @@ colSums(is.na(df))
 결측치는 없음을 확인할 수 있다.
 
 ```{r}
-df_sub1 = df[2:8]
-pairs(df_sub1 %>%  sample_n(1000))    # 변수별 산점도행렬 확인
-```
-```{r}
-df_sub2 = df[c(2, 9:13)]
-pairs(df_sub2 %>% sample_n(1000))
-```
-column의 수가 index, type을 제외하고도 12개로 상당히 많아 데이터프레임을 df_sub1과 df_sub2 두 개로 분리시킨 후 산점도행렬을 그려보았다. 각 변수들이 quality에 미치는 영향을 알아보기 위해 quality column은 두 그룹에 모두 포함시켰다.
+df_red <- df %>% filter(type=='red')
+df_red
 
+df_white <- df %>% filter(type=='white')
+df_white
+```
 
 
 ```{r}
-ggplot(df, aes(x = residual.sugar, y = quality)) +
-  geom_point()
+pairs(df_red[2:8] %>%  sample_n(1000))     # red wine 데이터의 변수별 산점도행렬 확인
+pairs(df_white[2:8] %>% sample_n(1000))    # white wine 데이터의 변수별 산점도행렬 확인
+```
+```{r}
+pairs(df_red[c(2, 9:13)] %>% sample_n(1000))
+pairs(df_white[c(2, 9:13)] %>% sample_n(1000))
 ```
 
-```{r}
-df %>% ggplot(aes(quality, residual.sugar, group=quality)) +
-  geom_boxplot()
-```
+column의 수가 index, type을 제외하고도 12개로 상당히 많아 각 데이터프레임의 column을 두 개로 분리시킨 후 산점도행렬을 그려보았다. 각 변수들이 quality에 미치는 영향을 알아보기 위해 quality column은 두 그룹에 모두 포함시켰다.
+
 
 
 
@@ -221,5 +221,85 @@ box11 <- df %>% ggplot(aes(quality, alcohol, group=quality)) +    # 둘 다 대�
 
 grid.arrange(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, nrow=6, ncol=2)
 
+```
+
+위의 그림에서 red wine data의 quality별 residual.sugar boxplot 부분이 white wine의 이상점(residual.sugar>60) 때문에 제대로 시각화되지 않았다. 아래에 이 부분만 따로 그려주었다.
+
+```{r}
+df_red %>% ggplot(aes(quality, residual.sugar, group=quality)) +  
+  geom_jitter(col='gray') +
+  geom_boxplot(alpha = .5, outlier.color = 'red')
+```
+
+
+```{r}
+df_white %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
+  geom_point()
+
+df_white %>% filter(quality <= 5) %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
+  geom_point()
+
+df_white %>% filter(quality >= 7) %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
+  geom_point()
+```
+
+너무 난잡하다.. mutate() 함수를 이용하여 새로운 new_quality column을 만들었다. (quality <=5 이면 new_quality='low', quality>=7이면 new_quality='high')
+
+이후 new_quality별로 color를 다르게 주며 두 집단 사이에 유의미한 차이가 있는지 알아보았다.
+
+```{r}
+df_white %>% 
+  filter(quality!=6) %>% 
+  mutate(new_quality = ifelse(quality > 6, 'high', 'low')) %>% 
+  ggplot(aes(x = citric.acid, y = residual.sugar, color=new_quality)) +
+  geom_point()
+   
+```
+
+우선 citric.acid는 high group이 low group보다 확실히 편차가 작다.
+
+residual.sugar도 전체적으로 high group이 편차가 더 낮은 듯 하다.
+
+```{r}
+
+df_red %>% 
+  filter(quality!=6) %>% 
+  mutate(new_quality = ifelse(quality > 6, 'high', 'low')) %>% 
+  ggplot(aes(x = citric.acid, y = sulphates, color=new_quality)) +
+  geom_point()
+
+```
+
+  흥미롭게도 high group의 citric.acid가 두 개의 그룹으로 분리되는 것처럼 보인다.(0.00~0.2, 0.25~0.75) 단순한 우연일까?
+  
+  sulphates 역시 두 group간 사이에 유의미한 차이를 보여주고 있는 것 같다.
+  
+
+```{r}
+y = df_red['quality']
+x = df_red['alcohol']
+D = data.frame(y, x)
+
+lm_alcohol = lm(quality~., data=D)
+summary(lm_alcohol)
+```
+
+```{r}
+y = df_red['quality']
+x = df_red['citric.acid']
+D = data.frame(y, x)
+
+lm_alcohol = lm(quality~., data=D)
+summary(lm_alcohol)
+```
+
+
+```{r}
+y = df_white['quality']
+x = df_white['citric.acid']
+D = data.frame(y, x)
+
+lm_alcohol = lm(quality~., data=D)
+summary(lm_alcohol)
 ```
 
