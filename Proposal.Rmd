@@ -303,3 +303,6 @@ lm_alcohol = lm(quality~., data=D)
 summary(lm_alcohol)
 ```
 
+## 4. time table
+
+4월 8일 : 줌을 통해 가설 보완, 데이터 분석, 시각화
