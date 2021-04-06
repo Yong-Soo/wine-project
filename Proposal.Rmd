@@ -1,6 +1,6 @@
 ---
 title: "Project Proposal"
-author: "Team 8"
+author: "8조 박지우, 신대형, 전재현, 조용수"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_document
 
@@ -40,21 +40,29 @@ library(gridExtra)
 
 - index : 구분자. 말 그대로 번호를 나타내 주는 index이다.
 - quality : 품질. 0에서 10 사이의 숫자로 나타내어져 있다.
-- fixed acidity : 산도. 적절한 농도일 경우 신선하고 청량한 느낌을 준다.
+- fixed acidity : 고정산. 쉽게 증발하지 않는 산을 의미
 - volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도(1.2~1.3g/L)일 경우 식초와 같은 불쾌한 맛을 낸다.
-- citric acid : 시트르산. 산도에 영향을 미치는 것 같다.
+- citric acid : 시트르산. 와인의 신선도와 맛에 영향을 미친다.
 - residual : 잔당. 발효 후 와인 속에 남아있는 당분.
 - chlorides : 염화물. 와인의 짠맛을 좌우한다.
-- free sulfur dioxide : 독립 이산화황. 와인의 보존재로 사용되며 높을 경우 사람에게 안 좋은 영향을 줄 수 있는 것 같다.
-- total sulfur dioxide : 총 이산화황. 독립 이산화황과 차이가 뭘까..??
-- density : 밀도. 와인을 마실 때의 바디감을 결정한다.
-- PH : 수소이온농도. 낮을수록 강한 산성임을 의미한다.
+- free sulfur dioxide : 독립 이산화황. 결합되지 않은 형태의 이산화황을 의미. 와인의 보존재로 사용되는 경우가 많다.
+- total sulfur dioxide : 총 이산화황. Free & Bound form Sulfur dioxide를 합친 것이다.
+- density : 밀도. 와인을 마실 때의 바디감을 결정한다.알코올 도수와 설탕의 농도에 영향을 많이 받는다.
+- PH : 수소이온농도. 값이 낮을수록 강한 산성임을 의미한다.
 - sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 와인의 맛을 개선하고 신선도를 유지시키며 생동감을 준다.
 - alcohol : 도수. 알코올의 농도.
 - type : 종류. 레드 와인인지 화이트 와인인지를 구분.
 
 
+
 ## 2. 연구가설
+
+1. 와인의 quality는 density에 영향을 많이 받을 것이다.
+
+2. 적절한(너무 낮지도, 높지도 않은) 산도와 당도를 가진 와인이 quality가 더 높을 것이다.
+
+3. 와인의 type별로 와인에 quality에 영향을 주는 변수가 달라질 것이다.
+
 
 
 ## 3. 각 연구가설과 관련된 탐색적 자료 분석
@@ -73,9 +81,11 @@ glimpse(df)    # 변수별로 대략적인 형태를 볼 수 있음
 summary(df)    # 최대값, 최소값, 사분위수 등의 기본적인 통계량 확인 가능
 ```
 ```{r}
-unique(df$type)
+table(df$type)
 ```
-'type' column이 범주형 변수라서 제대로 summary가 되지 않아 unique 함수로 고유값을 체크하였다. white wine과 red wine 두 종류밖에 없음을 확인할 수 있다.
+
+
+'type' column이 범주형 변수라서 제대로 summary가 되지 않아 table 함수로 분할표를 그려주었다. red와 white 두 종류밖에 없음을 확인할 수 있다.
 
 ```{r}
 colSums(is.na(df))
@@ -85,29 +95,42 @@ colSums(is.na(df))
 
 ```{r}
 df_red <- df %>% filter(type=='red')
-df_red
-
+df_red %>% head
 df_white <- df %>% filter(type=='white')
-df_white
+df_white %>% head
 ```
+
+type별로 데이터를 나누어 분석해주기 위해 red wine 데이터를 df_red에, white wine 데이터를 df_white에 저장해주었다.
 
 
 ```{r}
-pairs(df_red[2:8] %>%  sample_n(1000))     # red wine 데이터의 변수별 산점도행렬 확인
-pairs(df_white[2:8] %>% sample_n(1000))    # white wine 데이터의 변수별 산점도행렬 확인
-```
-```{r}
-pairs(df_red[c(2, 9:13)] %>% sample_n(1000))
-pairs(df_white[c(2, 9:13)] %>% sample_n(1000))
+
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...){
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y))
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste0(prefix, txt)
+  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+
+pairs(df_red[2:13] %>%  sample_n(1000),
+      upper.panel = panel.cor)# red wine 데이터의 변수별 산점도행렬 확인
+
+pairs(df_white[2:13] %>%  sample_n(1000),
+      upper.panel = panel.cor)# red wine 데이터의 변수별 산점도행렬 확인
+
 ```
 
-column의 수가 index, type을 제외하고도 12개로 상당히 많아 각 데이터프레임의 column을 두 개로 분리시킨 후 산점도행렬을 그려보았다. 각 변수들이 quality에 미치는 영향을 알아보기 위해 quality column은 두 그룹에 모두 포함시켰다.
-
+두 변수 사이의 상관계수와 산점도를 표시하여 분석해보았다. red wine과 white wine 모두 quality와 가장 상관계수가 높은 변수는 alcohol임을 알 수 있다.
 
 
 
 ```{r fig.width = 10, fig.height=7}
 
+
+# wine의 type별 column 변수의 histogram 분포
 
 pl1 = df %>% ggplot(aes(x=quality)) +
   geom_histogram() +
@@ -125,7 +148,7 @@ pl4 = df %>% ggplot(aes(x=citric.acid)) +
   geom_density() +
   facet_wrap(~ type)
 
-pl5 = df %>% ggplot(aes(x=residual.sugar)) +    # 그래프가 좀 이상함. outlier 값이 있을 것으로 예상됨.
+pl5 = df %>% ggplot(aes(x=residual.sugar)) +    
   geom_density() +
   facet_wrap(~ type)
 
@@ -164,6 +187,8 @@ grid.arrange(pl1, pl2, pl3, pl4, pl5, pl6, pl7, pl8, pl9, pl10, pl11, pl12, nrow
 
 ```{r fig.width= 10, fig.height=20}
 
+# wine의 type별 column 변수의 boxplot 분포
+
 box1 <-  df %>% ggplot(aes(quality, fixed.acidity, group=quality)) +
   geom_jitter(col='gray') +
   geom_boxplot(alpha = .5, outlier.color = 'red') +
@@ -179,7 +204,7 @@ box3 <- df %>% ggplot(aes(quality, citric.acid, group=quality)) +    # red 와�
   geom_boxplot(alpha = .5, outlier.color = 'red') +
   facet_wrap(~ type)
 
-box4 <- df %>% ggplot(aes(quality, residual.sugar, group=quality)) +    # 이상치 때문에 제대로 관측 불가
+box4 <- df %>% ggplot(aes(quality, residual.sugar, group=quality)) +    
   geom_jitter(col='gray') +
   geom_boxplot(alpha = .5, outlier.color = 'red') +
   facet_wrap(~ type)
@@ -223,27 +248,14 @@ grid.arrange(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11,
 
 ```
 
-위의 그림에서 red wine data의 quality별 residual.sugar boxplot 부분이 white wine의 이상점(residual.sugar>60) 때문에 제대로 시각화되지 않았다. 아래에 이 부분만 따로 그려주었다.
-
-```{r}
-df_red %>% ggplot(aes(quality, residual.sugar, group=quality)) +  
-  geom_jitter(col='gray') +
-  geom_boxplot(alpha = .5, outlier.color = 'red')
-```
 
 
 ```{r}
 df_white %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
   geom_point()
-
-df_white %>% filter(quality <= 5) %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
-  geom_point()
-
-df_white %>% filter(quality >= 7) %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
-  geom_point()
 ```
 
-너무 난잡하다.. mutate() 함수를 이용하여 새로운 new_quality column을 만들었다. (quality <=5 이면 new_quality='low', quality>=7이면 new_quality='high')
+산점도 그림에 quality별로 서로 다른 color를 주어 전체적인 형태를 살펴보려고 하였으나 여러 색이 겹쳐 알아보기가 어렵다. mutate() 함수를 이용하여 새로운 new_quality column을 만들었다. (quality <=5 이면 new_quality='low', quality>=7이면 new_quality='high')
 
 이후 new_quality별로 color를 다르게 주며 두 집단 사이에 유의미한 차이가 있는지 알아보았다.
 
@@ -256,53 +268,37 @@ df_white %>%
    
 ```
 
-우선 citric.acid는 high group이 low group보다 확실히 편차가 작다.
+우선 citric.acid는 high group이 확실히 low group보다 전체적으로 안쪽 범위에 몰려 있는 것을 확인할 수 있다.
 
 residual.sugar도 전체적으로 high group이 편차가 더 낮은 듯 하다.
 
-```{r}
-
-df_red %>% 
-  filter(quality!=6) %>% 
-  mutate(new_quality = ifelse(quality > 6, 'high', 'low')) %>% 
-  ggplot(aes(x = citric.acid, y = sulphates, color=new_quality)) +
-  geom_point()
-
-```
-
-  흥미롭게도 high group의 citric.acid가 두 개의 그룹으로 분리되는 것처럼 보인다.(0.00~0.2, 0.25~0.75) 단순한 우연일까?
-  
-  sulphates 역시 두 group간 사이에 유의미한 차이를 보여주고 있는 것 같다.
   
 
-```{r}
-y = df_red['quality']
-x = df_red['alcohol']
-D = data.frame(y, x)
-
-lm_alcohol = lm(quality~., data=D)
-summary(lm_alcohol)
-```
-
-```{r}
-y = df_red['quality']
-x = df_red['citric.acid']
-D = data.frame(y, x)
-
-lm_alcohol = lm(quality~., data=D)
-summary(lm_alcohol)
-```
-
-
-```{r}
-y = df_white['quality']
-x = df_white['citric.acid']
-D = data.frame(y, x)
-
-lm_alcohol = lm(quality~., data=D)
-summary(lm_alcohol)
-```
 
 ## 4. time table
 
 4월 8일 : 줌을 통해 가설 보완, 데이터 분석, 시각화
+
+~4월 23일 : 데이터 분석, 가설 검정 및 결과 기록
+
+~5월 2일 : 가설 보완 및 추가적인 가설 설정
+
+~5월 7일 : 경과보고서 작성
+
+~5월 23일 : 추가 가설 검정 및 결과 기록
+
+~6월 4일 : 최종보고서 작성, 발표 자료 준비
+
+
+
+## 5. 각 조원의 예상 역할
+
+박지우 : 가설 설정, 가설 검정 등
+
+신대형 : 자료 조사, 데이터 분석 등
+
+전재현 : 데이터 분석, 결과 정리(markdown 파일 제작) 등
+
+조용수 : 가설 설정, 데이터 시각화 등
+
+역할은 고정적인 것은 아니며 유동적으로 바뀔 수 있을 것 같다.
