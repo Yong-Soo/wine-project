@@ -69,42 +69,19 @@ library(gridExtra)
 
 ```{r}
 df = read.csv("data/train.csv", header = TRUE)    # csv file을 df라는 변수에 저장
-head(df)
-```
 
-
-```{r}
-glimpse(df)    # 변수별로 대략적인 형태를 볼 수 있음
-```
-
-```{r}
-summary(df)    # 최대값, 최소값, 사분위수 등의 기본적인 통계량 확인 가능
-```
-```{r}
-table(df$type)
-```
-
-
-'type' column이 범주형 변수라서 제대로 summary가 되지 않아 table 함수로 분할표를 그려주었다. red와 white 두 종류밖에 없음을 확인할 수 있다.
-
-```{r}
-colSums(is.na(df))
-```
-
-결측치는 없음을 확인할 수 있다.
-
-```{r}
 df_red <- df %>% filter(type=='red')
 df_red %>% head
 df_white <- df %>% filter(type=='white')
 df_white %>% head
 ```
 
+
 type별로 데이터를 나누어 분석해주기 위해 red wine 데이터를 df_red에, white wine 데이터를 df_white에 저장해주었다.
 
 
 ```{r}
-
+# 상관계수를 출력해주기 위한 함수
 panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...){
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
@@ -127,7 +104,7 @@ pairs(df_white[2:13] %>%  sample_n(1000),
 
 
 
-```{r fig.width = 10, fig.height=7}
+```{r fig.width = 10, fig.height=7, echo=FALSE}
 
 
 # wine의 type별 column 변수의 histogram 분포
@@ -185,7 +162,9 @@ grid.arrange(pl1, pl2, pl3, pl4, pl5, pl6, pl7, pl8, pl9, pl10, pl11, pl12, nrow
 
 ```
 
-```{r fig.width= 10, fig.height=20}
+wine의 type별 분포를 히스토그램으로 나타내주었다.
+
+```{r fig.width= 10, fig.height=20, echo=FALSE}
 
 # wine의 type별 column 변수의 boxplot 분포
 
@@ -248,6 +227,7 @@ grid.arrange(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11,
 
 ```
 
+wine의 type별 분포를 boxplot으로 나타내주었다.
 
 
 ```{r}
