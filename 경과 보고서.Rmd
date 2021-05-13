@@ -1,118 +1,61 @@
 ---
-title: "경과 보고서"
+title: "경과보고서_8조"
 output: 
   pdf_document:
     latex_engine: xelatex
+  html_document: default
 mainfont: NanumGothic
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
+```{r message = FALSE}
 library(ggplot2)
 library(dplyr)
 library(GGally)
 library(gridExtra)
 ```
 
-# Rmarkdown template(Title)
+## 1) 연구가설에 대한 자세한 소개
 
+### 1. 와인의 quality는 density에 영향을 많이 받을 것이다.
 
-## 1. 데이터에 대한 설명
+### 2. 와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.
 
-### Files
+### 3. 적절한(너무 낮지도, 높지도 않은) 산도와 당도를 가진 와인이 quality가 더 높을 것이다.
 
-- train.csv : 와인의 성분 및 품질이 담긴 데이터
-- test.csv : 와인의 성분이 담긴 데이터(품질을 예측할 필요)
+## 2) 가설에 대한 중간분석 결과
 
+### Basic Setting
 
-### Columns
-
-- index : 구분자. 말 그대로 번호를 나타내 주는 index이다.
-- quality : 품질. 0에서 10 사이의 숫자로 나타내어져 있다.
-- fixed acidity : 고정산. 쉽게 증발하지 않는 산을 의미
-- volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도(1.2~1.3g/L)일 경우 식초와 같은 불쾌한 맛을 낸다.
-- citric acid : 시트르산. 와인의 신선도와 맛에 영향을 미친다.
-- residual : 잔당. 발효 후 와인 속에 남아있는 당분.
-- chlorides : 염화물. 와인의 짠맛을 좌우한다.
-- free sulfur dioxide : 독립 이산화황. 결합되지 않은 형태의 이산화황을 의미. 와인의 보존재로 사용되는 경우가 많다.
-- total sulfur dioxide : 총 이산화황. Free & Bound form Sulfur dioxide를 합친 것이다.
-- density : 밀도. 와인을 마실 때의 바디감을 결정한다.알코올 도수와 설탕의 농도에 영향을 많이 받는다.
-- PH : 수소이온농도. 값이 낮을수록 강한 산성임을 의미한다.
-- sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 와인의 맛을 개선하고 신선도를 유지시키며 생동감을 준다.
-- alcohol : 도수. 알코올의 농도.
-- type : 종류. 레드 와인인지 화이트 와인인지를 구분.
-
-
-
-## 2. 연구가설
-
-1. 와인의 quality는 density에 영향을 많이 받을 것이다.
-
-2. 와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.
-
-3. 적절한(너무 낮지도, 높지도 않은) 산도와 당도를 가진 와인이 quality가 더 높을 것이다.
-
-
-
-## 3. 가설에 대한 중간분석 결과
+```{r}
+df = read.csv("data/train.csv", header = TRUE)
+df_red <- df %>% filter(type=='red')
+df_white <- df %>% filter(type=="white")
+```
 
 ### 1번 가설
 
-### density 와 quality는 모두 연속형 변수이므로 변수 간의 영향 관계를 알 수 있는 회귀분석을 이용하여 와인의 quality는 density에 영향을 많이 받을 것이라는 가설을 검정하겠다. 
 ```{r}
-df<-read.csv("C:/Download/train.CSV",header = T)
-```
-```{r}
-### H0 : 와인의 quality는 density에 영향을 받지 않는다.
-### H1 : H0이 옳지 않다.
-lm<-lm(df$quality~df$density, data = df)
+lm<-lm(quality~density, data = df)
 summary(lm)
-plot(lm)
-plot(df$quality~df$density)
-###산점도를 보았을 때 선형성이 존재하는지는 확인하기 어려웠다.
-###각 와인에 대한 데이터는 따로따로 모아졌으므로 반응변수 끼리는 독립적이다.
-###반응변수, 잔차가 정규분포를 띠어야 하는데 Q-Q plot에서 점들이 대체로 직선 위에 존재하므로 정규성을 띤다.
-###Scale-Location 그래프에서 High Leverage point가 존재하지만 대체로 잔차가 균일하게 분포되어 있는 것을 보아 등분산성을 충족한다.
-###회귀분석을 진행해도 괜찮아 보인다.
 ```
 
 위의 결과를 보았을 때 우선 p 값이 0.05보다 작으므로 유의수준을 5%로 설정했다면 통계적으로 유의미한 결과가 나왔다고 볼 수 있다. R 제곱 값이 약 0.08이므로 density가 quality의 8%밖에 설명하지 못한다는 것을 알 수 있다. 만약 density와 quality가 선형관계를 띤다면 음의 상관관계를 가진다. R 제곱 값으로 미루어 보아 density는 quality에 큰 영향을 주지 않는다는 것을 알 수 있다.
 
+
 ### 2번 가설
 
-```{r}
-df<-read.csv("C:/Download/train.CSV",header = T)    # csv file을 df라는 변수에 저장
-
-df_red <- df %>% filter(type=='red')
-df_red %>% head
-
-df_white <- df %>% filter(type=="white")
-df_white %>% head
-```
-
-여기서는 와인의 quality가 각 요소들의 linear model로 표현된다는 가정 하에, '와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.'라는 가설을 검정하였다. 먼저 index와 type을 제외한 나머지 변수가 모두 quality에 영향을 주는 linear model을 만들고, backward 변수선택법을 사용해 유의하지 않은 변수를 제거해주는 식으로 설명변수를 선택해 주었다. 이 과정을 red wine과 white wine에 대해서 수행한 후, 두 type간에 영향을 미치는 변수들이 다른지 여부를 살펴보았다.
 
 ```{r}
-df_red_lm <- df_red[, c(2:13)]  # 회귀분석을 할 때 필요하지 않은 index와 type 열을 제외시킨 새로운 dataframe을 만들어 주었다.
-
-lm_red_ori <- lm(quality~ ., data = df_red_lm)    # balance 값이 들어가지 않은 기본 linear model
-
-lm_red_ori_step <- step(lm_red_ori, direction = "backward")
-summary(lm_red_ori_step)
-
+df_red_lm <- df_red[, c(2:13)]  # Exclude 'index', 'type' column
+lm_red_ori <- lm(quality~ ., data = df_red_lm)
+coef(step(lm_red_ori, direction = "backward", trace = 0))
 ```
 
 
 ```{r}
-df_white_lm <- df_white[, c(2:13)]  # 회귀분석을 할 때 필요하지 않은 index와 type 열을 제외시킨 새로운 dataframe을 만들어 주었다.
-
-lm_white_ori <- lm(quality~ ., data = df_white_lm)    # balance 값이 들어가지 않은 기본 linear model
-
-lm_white_ori_step <- step(lm_white_ori, direction = "backward")
-summary(lm_white_ori_step)
+df_white_lm <- df_white[, c(2:13)]
+lm_white_ori <- lm(quality~ ., data = df_white_lm)
+coef(step(lm_white_ori, direction = "backward", trace = 0))
 ```
 
 분석 결과 red와 white 모두에서 유의하게 나온 변수는 volatile.acidity, free.sulfur.dioxide, pH, sulphates, alcohol이었고 red에만 유의하게 나온 변수는 citric.acid, chlorides, total.sulfur.dioxide, white에만 유의하게 나온 변수는 fixed.acidity, residual.sugar, density가 있다.
@@ -123,90 +66,21 @@ summary(lm_white_ori_step)
 
 ### 3번 가설
 
-- https://blog.naver.com/hitejinrovin/220923836914에 따르면, 와인의 품질은 균형(balance)에 따라 좌우된다. 구체적으로, 너무 많지도 부족하지도 않은 적당한 농도의 당도와 산도, 알코올 농도를 가진 와인이 품질이 좋다고 한다. 특정 와인의 balance를 정량적으로 계산하는 방법은 찾을 수 없었으나, 여기서는 당소, 산도의 값과 그 요소들의 평균까지의 거리가 balance를 나타낼 것이라는 가정 하에 회귀분석을 진행하였다. 여기서 balance를 구하는 방법은 크게 두 가지로 나누어 보았다.
-
-(1) : |당도 - (당도의 평균)| + |산도 - (산도의 평균)| + |알코올 - (알코올의 평균) : 거리를 절댓값으로 계산한 결과이다.
-(2) : ((당도 - (당도의 평균))^2 + (산도 - (산도의 평균))^2 + (알코올 - (알코올의 평균))^2)^(1/2) : 거리를 유클리드 기하로 계산한 결과이다. (1)번 거리보다 요소에 극단적인 값이 있을 때 더욱 결과가 크게 나온다.
-
-(1), (2)는 거리를 계산하는 과정에서 약간의 차이가 생기나, 두 가지 방법으로 구한 balance 값 모두 한 와인의 농도, 산도 값이 얼마나 평균과 멀리 떨어져 있는지 그 정도를 수치화해서 보여준다. 따라서 이 요소를 회귀분석 model(2번 가설에서 구한 lm_red_ori_step, lm_white_ori_step)에 넣어 beta값을 구해서 유의한 결과값이 나온다면, 적당한 당도와 산도가 와인의 품질에 영향을 미친다고 할 수 있을 것이다.
-
-
-
 ```{r}
-df_red_1 <- df_red_lm %>% mutate(balance = abs(residual.sugar - mean(residual.sugar)) + abs(citric.acid - mean(citric.acid)) + abs(alcohol - mean(alcohol)))  # (1)번 방법을 사용하여 balance를 구해 df_red_1 열에 추가해 줌
-df_red_1 <- df_red_1 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  
+df_1 <- df %>% mutate(balance = sqrt((residual.sugar - mean(residual.sugar))^2 + (citric.acid - mean(citric.acid))^2) + (alcohol - mean(alcohol))^2)  # include new 'balance' column
+df_1 <- df_1 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  # centering variable to avoid multicollinearity
 
-lm_red_1 <- lm(quality~ volatile.acidity + citric.acid + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + pH + sulphates + alcohol + balance, data = df_red_1)  # balance까지 설명변수로 추가하여 구한 linear model
-summary(lm_red_1)
+lm_1 <- lm(quality~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol + balance, data = df_1)
+summary(lm_1)
 ```
 
-```{r}
-df_red_2 <- df_red_lm %>% mutate(balance = sqrt((residual.sugar - mean(residual.sugar))^2 + (citric.acid - mean(citric.acid))^2) + (alcohol - mean(alcohol))^2)  # (2)번 방법을 사용하여 balance를 구해 df_red_1 열에 추가해 줌
-df_red_2 <- df_red_2 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  # balance까지 설명변수로 추가하여 구한 linear model
-lm_red_2 <- lm(quality~ volatile.acidity + citric.acid + chlorides + free.sulfur.dioxide + total.sulfur.dioxide + pH + sulphates + alcohol + balance, data = df_red_2)
-summary(lm_red_2)
-```
-
-```{r}
-df_white_1 <- df_white_lm %>% mutate(balance = abs(residual.sugar - mean(residual.sugar)) + abs(citric.acid - mean(citric.acid)) + abs(alcohol - mean(alcohol)))  # (1)번 방법을 사용하여 balance를 구해 df_red_1 열에 추가해 줌
-df_white_1 <- df_white_1 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  
-
-lm_white_1 <- lm(quality~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol + balance, data = df_white_1)  # balance까지 설명변수로 추가하여 구한 linear model
-summary(lm_white_1)
-```
-
-```{r}
-df_white_2 <- df_white_lm %>% mutate(balance = sqrt((residual.sugar - mean(residual.sugar))^2 + (citric.acid - mean(citric.acid))^2) + (alcohol - mean(alcohol))^2)  # (2)번 방법을 사용하여 balance를 구해 df_red_1 열에 추가해 줌
-df_white_2 <- df_white_2 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  # balance까지 설명변수로 추가하여 구한 linear model
-lm_white_2 <- lm(quality~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol + balance, data = df_white_2)
-summary(lm_white_2)
-```
-
-
-네 가지 경우 모두 balance 값이 유의하지 않다고 나왔다. 사실 예상과는 매우 다른 결과가 나왔는데, balance를 sugar_balance, acid_balance, alcohol_balance 등으로 나누어서 검정해 보아도 모두 유의하지 않은 결과가 나타났다. 정확한 원인은 알 수 없으나 나름대로 추청한다면 다음과 같은 이유가 있을 수 있겠다.
+summary 결과 balance 값이 유의하지 않다고 나왔다. 사실 예상과는 매우 다른 결과가 나왔는데, balance를 sugar_balance, acid_balance, alcohol_balance 등으로 나누어서 검정해 보아도 모두 유의하지 않은 결과가 나타났다. 정확한 원인은 알 수 없으나 나름대로 추청한다면 다음과 같은 이유가 있을 수 있겠다.
 
 사실 balance는 저런 간단한 식으로 구해지는 것이 아닐 수 있다. 출처로 제시한 사이트를 참고하면, 와인의 balance는 단순히 당도, 산도, 알코올 말고도 탄닌, 과일 풍미가 농축된 정도 같은 더 다양한 요인들에게 영향을 받는다. 이러한 점이 가설검정을 할 때 사용된 balance를 구하는 데에는 고려되지 않았고, 또한 각 요소별로 가중치가 다르다거나, 더 복잡한 식으로 balance가 결정될 가능성 역시 존재한다. 이러한 점에서 우리가 구한 balance라는 수치가 와인의 quality를 결정하는 데 적절한 요인이 아닐 수 있다.
 
 
-또한 이 가설과 별개로, '과연 linear model이 와인의 quality를 평가하는 데(accuracy라는 기준을 가지고) 적절한 모형인가?' 라는 의문이 들었다. 이를 살펴보기 위해 linear model로 와인의 quality를 추정한 뒤 예측 정확도를 구해보는 작업을 해 보았다.
+## 3) 향후 분석 계획
 
+위의 가설과 별개로, '과연 linear model이 와인의 quality를 평가하는 데(accuracy라는 기준을 가지고) 적절한 모형인가?' 라는 의문이 들었다. 이를 살펴보기 위해 linear model로 와인의 quality를 추정한 뒤 예측 정확도를 구해보는 작업을 해 본 결과, model의 전체적인 정확도가 50%~60% 사이로 그렇게 높지 않았다.
 
-
-```{r}
-makeAcc <- function(pred, ans){   # 예측 결과값이 담긴 벡터 pred, 실제 정답이 담긴 벡터 ans을 인수로 받아 정확도를 return해주는 함수
-  cnt <- 0
-  for (i in 1:length(pred)){
-    if (pred[i] == ans[i]) {
-      cnt <- cnt + 1
-    }
-  }
-  return (cnt / length(pred))
-}
-```
-
-
-
-
-```{r}
-lm_red_ori_answer = sapply(lm_red_ori %>% predict %>% unname, round)
-makeAcc(lm_red_ori_answer, df_red$quality)
-
-lm_red_1_answer = sapply(lm_red_1 %>% predict %>% unname, round)
-makeAcc(lm_red_1_answer, df_red$quality)
-
-lm_red_2_answer = sapply(lm_red_2 %>% predict %>% unname, round)
-makeAcc(lm_red_2_answer, df_red$quality)
-
-lm_white_ori_answer = sapply(lm_white_ori %>% predict %>% unname, round)
-makeAcc(lm_white_ori_answer, df_white$quality)
-
-lm_white_1_answer = sapply(lm_white_1 %>% predict %>% unname, round)
-makeAcc(lm_white_1_answer, df_white$quality)
-
-lm_white_2_answer = sapply(lm_white_2 %>% predict %>% unname, round)
-makeAcc(lm_white_2_answer, df_white$quality)
-```
-
-각 type별로 서로 다른 3개의 모델을 이용해 accuracy를 계산해 보았다. 이 역시 위의 결과와 크게 다르지 않게 balance를 변수로 넣는지 여부에 따라 정확도가 거의 변하지 않았으며, 심지어 더 줄어드는 경우도 있음을 확인해 볼 수 있었다.
-
-이와는 별개로 전체적인 정확도가 50%~60% 사이로 그렇게 높지 않은데, 이는 와인의 quality가 linear model을 따르지 않을 수 있으며, OLS를 최소화하는 방식으로 제작된 linear model이 Acuuracy를 최대로 높이는 문제의 의도와 차이가 있어서 발생하는 문제라고 생각한다. 최종 보고서 때는 이러한 단점을 개선시킬 수 있는 비선형적 모델(랜덤포레스트)를 적용하여 보고자 한다.
+이는 와인의 quality가 linear model을 따르지 않을 수 있으며, OLS를 최소화하는 방식으로 제작된 linear model이 Acuuracy를 최대로 높이는 문제의 의도와 차이가 있어서 발생하는 문제라고 생각한다. 향후 최종 보고서 때는 model의 Accuracy를 더욱 개선시키기 위해 비선형적 모델(랜덤포레스트)를 적용한 뒤 linear model과의 성능 차이를 분석할 계획이다.
