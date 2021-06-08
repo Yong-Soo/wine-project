@@ -1,0 +1,330 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{NanumGothic}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={경과보고서\_8조},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{경과보고서\_8조}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{uxc5f0uxad6cuxac00uxc124uxc5d0-uxb300uxd55c-uxc790uxc138uxd55c-uxc18cuxac1c}{%
+\subsection{1) 연구가설에 대한 자세한
+소개}\label{uxc5f0uxad6cuxac00uxc124uxc5d0-uxb300uxd55c-uxc790uxc138uxd55c-uxc18cuxac1c}}
+
+\hypertarget{uxc640uxc778uxc758-qualityuxb294-densityuxc5d0-uxc601uxd5a5uxc744-uxb9ceuxc774-uxbc1buxc744-uxac83uxc774uxb2e4.}{%
+\subsubsection{1. 와인의 quality는 density에 영향을 많이 받을
+것이다.}\label{uxc640uxc778uxc758-qualityuxb294-densityuxc5d0-uxc601uxd5a5uxc744-uxb9ceuxc774-uxbc1buxc744-uxac83uxc774uxb2e4.}}
+
+density 와 quality는 모두 연속형 변수이므로 변수 간의 영향 관계를 알 수
+있는 회귀분석을 이용하여 와인의 quality는 density에 영향을 많이 받을
+것이라는 가설을 검정하였다.
+
+\hypertarget{uxc640uxc778uxc758-typeuxbcc4uxb85c-uxc640uxc778uxc758-qualityuxc5d0-uxc601uxd5a5uxc744-uxc8fcuxb294-uxbcc0uxc218uxac00-uxb2ecuxb77cuxc9c8-uxac83uxc774uxb2e4.}{%
+\subsubsection{2. 와인의 type별로 와인의 quality에 영향을 주는 변수가
+달라질
+것이다.}\label{uxc640uxc778uxc758-typeuxbcc4uxb85c-uxc640uxc778uxc758-qualityuxc5d0-uxc601uxd5a5uxc744-uxc8fcuxb294-uxbcc0uxc218uxac00-uxb2ecuxb77cuxc9c8-uxac83uxc774uxb2e4.}}
+
+와인의 quality가 각 요소들의 linear model로 표현된다는 가정 하에,
+'와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.'라는
+가설을 검정하였다. 먼저 index와 type을 제외한 나머지 변수가 모두
+quality에 영향을 주는 linear model을 만들고, backward 변수선택법을
+사용해 유의하지 않은 변수를 제거해주는 식으로 설명변수를 선택해 주었다.
+이 과정을 red wine과 white wine에 대해서 수행한 후, 두 type간에 영향을
+미치는 변수들이 다른지 여부를 살펴보았다.
+
+\hypertarget{uxc801uxc808uxd55cuxb108uxbb34-uxb0aeuxc9c0uxb3c4-uxb192uxc9c0uxb3c4-uxc54auxc740-uxc0b0uxb3c4uxc640-uxb2f9uxb3c4uxb97c-uxac00uxc9c4-uxc640uxc778uxc774-qualityuxac00-uxb354-uxb192uxc744-uxac83uxc774uxb2e4.}{%
+\subsubsection{3. 적절한(너무 낮지도, 높지도 않은) 산도와 당도를 가진
+와인이 quality가 더 높을
+것이다.}\label{uxc801uxc808uxd55cuxb108uxbb34-uxb0aeuxc9c0uxb3c4-uxb192uxc9c0uxb3c4-uxc54auxc740-uxc0b0uxb3c4uxc640-uxb2f9uxb3c4uxb97c-uxac00uxc9c4-uxc640uxc778uxc774-qualityuxac00-uxb354-uxb192uxc744-uxac83uxc774uxb2e4.}}
+
+\url{https://blog.naver.com/hitejinrovin/220923836914에} 따르면, 와인의
+품질은 균형(balance)에 따라 좌우된다. 구체적으로, 너무 많지도 부족하지도
+않은 적당한 농도의 당도와 산도, 알코올 농도를 가진 와인이 품질이 좋다고
+한다. 특정 와인의 balance를 정량적으로 계산하는 방법은 찾을 수 없었으나,
+여기서는 당소, 산도의 값과 그 요소들의 평균까지의 거리가 balance를
+나타낼 것이라는 가정 하에 blance라는 변수를 직접 만들어 이를 추가한
+회귀분석을 진행하였다.
+
+\hypertarget{uxac00uxc124uxc5d0-uxb300uxd55c-uxc911uxac04uxbd84uxc11d-uxacb0uxacfc}{%
+\subsection{2) 가설에 대한 중간분석
+결과}\label{uxac00uxc124uxc5d0-uxb300uxd55c-uxc911uxac04uxbd84uxc11d-uxacb0uxacfc}}
+
+\hypertarget{basic-setting}{%
+\subsubsection{Basic Setting}\label{basic-setting}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"data/train.csv"}\NormalTok{, }\AttributeTok{header =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{df\_red }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(type}\SpecialCharTok{==}\StringTok{\textquotesingle{}red\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_white }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(type}\SpecialCharTok{==}\StringTok{"white"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{uxbc88-uxac00uxc124}{%
+\subsubsection{1번 가설}\label{uxbc88-uxac00uxc124}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm}\OtherTok{\textless{}{-}}\FunctionTok{lm}\NormalTok{(quality}\SpecialCharTok{\textasciitilde{}}\NormalTok{density, }\AttributeTok{data =}\NormalTok{ df)}
+\FunctionTok{summary}\NormalTok{(lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = quality ~ density, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.1284 -0.6245  0.0171  0.4777  4.0171 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   91.939      3.697   24.87   <2e-16 ***
+## density      -86.581      3.716  -23.30   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8303 on 5495 degrees of freedom
+## Multiple R-squared:  0.0899, Adjusted R-squared:  0.08973 
+## F-statistic: 542.8 on 1 and 5495 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+위의 결과를 보았을 때 우선 p 값이 0.05보다 작으므로 유의수준을 5\%로
+설정했다면 통계적으로 유의미한 결과가 나왔다고 볼 수 있다. R 제곱 값이
+약 0.08이므로 density가 quality의 8\%밖에 설명하지 못한다는 것을 알 수
+있다. 만약 density와 quality가 선형관계를 띤다면 음의 상관관계를 가진다.
+R 제곱 값으로 미루어 보아 density는 quality에 큰 영향을 주지 않는다는
+것을 알 수 있다.
+
+\hypertarget{uxbc88-uxac00uxc124-1}{%
+\subsubsection{2번 가설}\label{uxbc88-uxac00uxc124-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_red\_lm }\OtherTok{\textless{}{-}}\NormalTok{ df\_red[, }\FunctionTok{c}\NormalTok{(}\DecValTok{2}\SpecialCharTok{:}\DecValTok{13}\NormalTok{)]  }\CommentTok{\# Exclude \textquotesingle{}index\textquotesingle{}, \textquotesingle{}type\textquotesingle{} column}
+\NormalTok{lm\_red\_ori }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(quality}\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ df\_red\_lm)}
+\FunctionTok{coef}\NormalTok{(}\FunctionTok{step}\NormalTok{(lm\_red\_ori, }\AttributeTok{direction =} \StringTok{"backward"}\NormalTok{, }\AttributeTok{trace =} \DecValTok{0}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          (Intercept)     volatile.acidity          citric.acid 
+##          4.620634786         -1.102465872         -0.226143145 
+##            chlorides  free.sulfur.dioxide total.sulfur.dioxide 
+##         -1.811982373          0.004885911         -0.003980351 
+##                   pH            sulphates              alcohol 
+##         -0.494730150          0.929490094          0.282697525
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_white\_lm }\OtherTok{\textless{}{-}}\NormalTok{ df\_white[, }\FunctionTok{c}\NormalTok{(}\DecValTok{2}\SpecialCharTok{:}\DecValTok{13}\NormalTok{)]}
+\NormalTok{lm\_white\_ori }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(quality}\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ df\_white\_lm)}
+\FunctionTok{coef}\NormalTok{(}\FunctionTok{step}\NormalTok{(lm\_white\_ori, }\AttributeTok{direction =} \StringTok{"backward"}\NormalTok{, }\AttributeTok{trace =} \DecValTok{0}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         (Intercept)       fixed.acidity    volatile.acidity      residual.sugar 
+##        1.517077e+02        6.747169e-02       -1.919229e+00        8.379455e-02 
+## free.sulfur.dioxide             density                  pH           sulphates 
+##        3.415588e-03       -1.518877e+02        6.770859e-01        6.827911e-01 
+##             alcohol 
+##        1.966551e-01
+\end{verbatim}
+
+분석 결과 red와 white 모두에서 유의하게 나온 변수는 volatile.acidity,
+free.sulfur.dioxide, pH, sulphates, alcohol이었고 red에만 유의하게 나온
+변수는 citric.acid, chlorides, total.sulfur.dioxide, white에만 유의하게
+나온 변수는 fixed.acidity, residual.sugar, density가 있다.
+
+결과를 분석해 본다면, 우선 white에만 residual.sugar가 품질에 영향을
+미친다는 것은 화이트 와인을 마시는 소비자가 상대적으로 당도를 더
+중요하게 고려한다는 것으로 설명할 수 있을 것 같다.
+\url{https://www.asiae.co.kr/article/2018060806513888770} 에 의하면,
+화이트와인은 레드와인과 달리 껍질이나 씨에서 색소나 탄닌을 수출하는
+과정이 없다. 따라서 화이트와인에 대한 소비자의 요구 또한 신선하고, 너무
+떫거나 쓰지 않는 것으로, 가볍고 산뜻한 와인을 좋아한다고 한다.
+
+\hypertarget{uxbc88-uxac00uxc124-2}{%
+\subsubsection{3번 가설}\label{uxbc88-uxac00uxc124-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_1 }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{balance =} \FunctionTok{sqrt}\NormalTok{((residual.sugar }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(residual.sugar))}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ (citric.acid }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(citric.acid))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ (alcohol }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(alcohol))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)  }\CommentTok{\# include new \textquotesingle{}balance\textquotesingle{} column}
+\NormalTok{df\_1 }\OtherTok{\textless{}{-}}\NormalTok{ df\_1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{residual.sugar =} \FunctionTok{scale}\NormalTok{(residual.sugar, }\AttributeTok{center =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{scale =} \ConstantTok{FALSE}\NormalTok{), }\AttributeTok{citric.acid =} \FunctionTok{scale}\NormalTok{(citric.acid, }\AttributeTok{center =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{scale =} \ConstantTok{FALSE}\NormalTok{))  }\CommentTok{\# centering variable to avoid multicollinearity}
+
+\NormalTok{lm\_1 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(quality}\SpecialCharTok{\textasciitilde{}}\NormalTok{ fixed.acidity }\SpecialCharTok{+}\NormalTok{ volatile.acidity }\SpecialCharTok{+}\NormalTok{ residual.sugar }\SpecialCharTok{+}\NormalTok{ free.sulfur.dioxide }\SpecialCharTok{+}\NormalTok{ density }\SpecialCharTok{+}\NormalTok{ pH }\SpecialCharTok{+}\NormalTok{ sulphates }\SpecialCharTok{+}\NormalTok{ alcohol }\SpecialCharTok{+}\NormalTok{ balance, }\AttributeTok{data =}\NormalTok{ df\_1)}
+\FunctionTok{summary}\NormalTok{(lm\_1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = quality ~ fixed.acidity + volatile.acidity + residual.sugar + 
+##     free.sulfur.dioxide + density + pH + sulphates + alcohol + 
+##     balance, data = df_1)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.5276 -0.4707 -0.0312  0.4570  3.0077 
+## 
+## Coefficients:
+##                       Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)          3.801e+01  1.227e+01   3.097  0.00197 ** 
+## fixed.acidity        5.768e-02  1.622e-02   3.556  0.00038 ***
+## volatile.acidity    -1.247e+00  7.755e-02 -16.078  < 2e-16 ***
+## residual.sugar       3.229e-02  5.484e-03   5.888 4.14e-09 ***
+## free.sulfur.dioxide  2.026e-03  6.732e-04   3.010  0.00263 ** 
+## density             -3.752e+01  1.251e+01  -3.000  0.00271 ** 
+## pH                   4.611e-01  9.580e-02   4.813 1.53e-06 ***
+## sulphates            7.678e-01  8.093e-02   9.487  < 2e-16 ***
+## alcohol              3.014e-01  1.762e-02  17.103  < 2e-16 ***
+## balance              3.082e-03  3.955e-03   0.779  0.43589    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7392 on 5487 degrees of freedom
+## Multiple R-squared:  0.2798, Adjusted R-squared:  0.2786 
+## F-statistic: 236.9 on 9 and 5487 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+summary 결과 balance 값이 유의하지 않다고 나왔다. 사실 예상과는 매우
+다른 결과가 나왔는데, balance를 sugar\_balance, acid\_balance,
+alcohol\_balance 등으로 나누어서 검정해 보아도 모두 유의하지 않은 결과가
+나타났다. 정확한 원인은 알 수 없으나 나름대로 추청한다면 다음과 같은
+이유가 있을 수 있겠다.
+
+사실 balance는 저런 간단한 식으로 구해지는 것이 아닐 수 있다. 출처로
+제시한 사이트를 참고하면, 와인의 balance는 단순히 당도, 산도, 알코올
+말고도 탄닌, 과일 풍미가 농축된 정도 같은 더 다양한 요인들에게 영향을
+받는다. 이러한 점이 가설검정을 할 때 사용된 balance를 구하는 데에는
+고려되지 않았고, 또한 각 요소별로 가중치가 다르다거나, 더 복잡한 식으로
+balance가 결정될 가능성 역시 존재한다. 이러한 점에서 우리가 구한
+balance라는 수치가 와인의 quality를 결정하는 데 적절한 요인이 아닐 수
+있다.
+
+\hypertarget{uxd5a5uxd6c4-uxbd84uxc11d-uxacc4uxd68d}{%
+\subsection{3) 향후 분석
+계획}\label{uxd5a5uxd6c4-uxbd84uxc11d-uxacc4uxd68d}}
+
+위의 가설과 별개로, `과연 linear model이 와인의 quality를 평가하는
+데(accuracy라는 기준을 가지고) 적절한 모형인가?' 라는 의문이 들었다.
+이를 살펴보기 위해 linear model로 와인의 quality를 추정한 뒤 예측
+정확도를 구해보는 작업을 해 본 결과, model의 전체적인 정확도가
+50\%\textasciitilde60\% 사이로 그렇게 높지 않았다.
+
+이는 와인의 quality가 linear model을 따르지 않을 수 있으며, OLS를
+최소화하는 방식으로 제작된 linear model이 Acuuracy를 최대로 높이는
+문제의 의도와 차이가 있어서 발생하는 문제라고 생각한다. 향후 최종 보고서
+때는 model의 Accuracy를 더욱 개선시키기 위해 비선형적
+모델(랜덤포레스트)를 적용한 뒤 linear model과의 성능 차이를 분석할
+계획이다.
+
+\end{document}
