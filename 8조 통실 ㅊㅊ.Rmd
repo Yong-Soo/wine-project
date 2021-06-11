@@ -224,7 +224,9 @@ residual.sugar도 전체적으로 high group이 편차가 더 낮은 듯 하다.
 # H1 : H0이 옳지 않다.
 lm<-lm(quality~density, data = df)
 summary(lm)
+par(mfrow = c(2,2))
 plot(lm)
+par(mfrow = c(1, 1))
 plot(quality~density, data = df)
 ``` 
  

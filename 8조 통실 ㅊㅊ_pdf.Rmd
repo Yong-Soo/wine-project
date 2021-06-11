@@ -1,0 +1,354 @@
+---
+title: "최종보고서_8조"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+mainfont: NanumGothic
+---
+
+```{r,message = FALSE,warning = FALSE}
+library(ggplot2)
+library(dplyr)
+library(GGally)
+library(gridExtra)
+library(car)
+library(randomForest)
+library(caTools)
+```
+## 1) 서론
+와인의 품질을 결정하는 요인은 굉장히 다양하다. 산지나 포도밭별로 등급이 매겨지기도 하고, 포도 당도를 기준으로 매겨지기도 한다. 데이콘 와인품질 경진대회에서는 와인의 품질을 고정산, 휘발성산, 시트르산, 잔당, 염화물, 독립 이산화황, 총 이산화황, 밀도, pH, 황산염, 와인의 종류를 기준으로 와인들의 품질을 평가한다. 이 보고서에선 이렇게 평가된 와인들의 데이터를 바탕으로 와인의 품질이 특정 변수들의 변화에 어떻게 반응하는지 확인하고, 이를 바탕으로 와인의 최적화된 품질을 내기 위해서 위 변수들을 어떻게 조작해야 하는지를 탐구해 볼 것이다. 통계 프로그램은 다양하지만, 본 연구에서는 가장 대중적이고 여러 분석 방법이 존재하는 R프로그램을 분석에 이용할 것이다.
+
+## 2) 분석의 주요목적
+### 가설 1 : 와인의 quality는 density에 영향을 많이 받을 것이다.
+가설 1에서는 quality와 density 사이의 산점도를 통해 분포를 살펴본 결과 둘 사이의 직선관계가 존재하는 것 같아 이것이 통계적으로 유의미한 것인지 검증하고자 가설을 제기하였다. 
+
+### 가설 2 : 와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.
+이후 나오는 탐색적 자료 분석 과정에서 기존 데이터를 red wine과 white wine의 데이터로 나누어 box plot을 그려본 결과 각 data별로 변수들이 quality에 미치는 영향이 서로 매우 다른 것을 확인할 수 있었다. 이에 따라 가설 2를 제시하였으며, 와인의 type별로 이러한 변화가 생기는 이유 역시 알아내고자 하였다.
+
+### 가설 3 : 적절한(너무 낮지도, 높지도 않은) 산도와 당도를 가진 와인이 quality가 더 높을 것이다.
+https://blog.naver.com/hitejinrovin/220923836914 에 따르면 "당도, 산도, 타닌, 알코올 같은 와인의 구성 요소 중 어느 하나라도 많거나 부족하면 소위 '최고의 와인'이 될 수 없다. 전체적으로 균형이 잘 잡힌 와인은 부드럽게 목을 타고 흐르며 마시기에 편안하다."고 한다. 이에 따라 가설 3을 제기하였다. 
+
+## 3) 분석에 사용된 방법
+### 가설 1 
+density는 연속형 변수이고, 와인의 quality는 이산형 변수지만 크기 비교가 가능한 순서형 변수이기 때문에 두 변수 간의 영향 관계를 알 수 있는 분석 중 회귀분석을 채택하였다. 회귀분석은 자료들 간의 관계성을 수학적으로 추정하는 분석 방법으로,  회귀분석을 진행하기 위해서는 아래 4가지 조건이 충족되어야 한다.
+
+1. 회귀분석이 회귀 직선식을 구하여 진행하는 분석인 만큼 자료에서 선형성이 확인되어야 한다.
+2. 반응변수가 독립이어야 한다. 즉, 반응변수에서 특정 패턴이 관찰되면 안된다.
+3. 반응변수, 잔차가 정규분포를 띠어야 한다. 
+4. 잔차가 균일하게 분포되어 각 독립변수(설명변수)에 해당하는 반응변수들의 분산이 같은 등분산성을 충족해야 한다. 
+
+우리는 위의 4가지 조건을 파악함으로써 회귀직선의 적합성을 확인하였다.
+
+### 가설 2 
+Linear Model에서 실제로 설명변수에 영향을 미치는 변수들을 골라내는 대표적인 기법으로 backward selection 방법이 있다. 이를 red wine과 white wine에서 얻어진 model에 각각 적용하여 둘 중 어느 한 그룹에만 유의한 영향을 미치는 변수가 있는지를 살펴보았고, 이것이 어떤 의미를 가지는지를 분석해 보려고 시도하였다.
+
+### 가설 3 
+특정 와인의 balance를 정량적으로 계산하는 방법은 찾을 수 없었으나, 여기서는 당도, 산도의 값과 그 요소들의 평균까지의 거리가 balance를 나타낼 것이라는 가정 하에 회귀분석을 진행하였다. 여기서 balance를 구하는 방법은 크게 두 가지로 나누어 보았다.
+
+(1) : |당도 - (당도의 평균)| + |산도 - (산도의 평균)| + |알코올 - (알코올의 평균) : 거리를 절댓값으로 계산한 결과이다.
+(2) : ((당도 - (당도의 평균))^2 + (산도 - (산도의 평균))^2 + (알코올 - (알코올의 평균))^2)^(1/2) : 거리를 유클리드 기하로 계산한 결과이다. (1)번 거리보다 요소에 극단적인 값이 있을 때 더욱 결과가 크게 나온다.
+
+(1), (2)는 거리를 계산하는 과정에서 약간의 차이가 생기나, 두 가지 방법으로 구한 balance 값 모두 한 와인의 농도, 산도 값이 얼마나 평균과 멀리 떨어져 있는지 그 정도를 수치화해서 보여준다. 따라서 이 '적절함'을 나타내는 새로운 측도를 2번 가설에서 구한 model의 변수로 새롭게 추가한 뒤, beta 값이 유의한 값이 나온다면 '당도와 산도의 적절함' 이란 지표가 실제로 quality에 유의한 영향을 미친다고 할 수 있을 것이다.
+
+## 4) 분석결과
+### 4-1 데이터에 대한 설명
+  
+#### Files
+- train.csv : 와인의 성분 및 품질이 담긴 데이터
+- test.csv : 와인의 성분이 담긴 데이터(품질을 예측할 필요)
+
+#### Columns
+- index : 구분자. 말 그대로 번호를 나타내 주는 index이다.
+- quality : 품질. 0에서 10 사이의 숫자로 나타내어져 있다.
+- fixed acidity : 고정산. 쉽게 증발하지 않는 산을 의미
+- volatile acidity : 휘발성산. 와인을 상하게 하는 효모나 박테리아에 의해 만들어지며 높은 농도(1.2~1.3g/L)일 경우 식초와 같은 불쾌한 맛을 낸다.
+- citric acid : 시트르산. 와인의 신선도와 맛에 영향을 미친다.
+- residual : 잔당. 발효 후 와인 속에 남아있는 당분.
+- chlorides : 염화물. 와인의 짠맛을 좌우한다.
+- free sulfur dioxide : 독립 이산화황. 결합되지 않은 형태의 이산화황을 의미. 와인의 보존재로 사용되는 경우가 많다.
+- total sulfur dioxide : 총 이산화황. Free & Bound form Sulfur dioxide를 합친 것이다.
+- density : 밀도. 와인을 마실 때의 바디감을 결정한다.알코올 도수와 설탕의 농도에 영향을 많이 받는다.
+- PH : 수소이온농도. 값이 낮을수록 강한 산성임을 의미한다.
+- sulphates : 황산염. 이산화황 수용액이 산화되며 만들어진 염이다. 와인의 맛을 개선하고 신선도를 유지시키며 생동감을 준다.
+- alcohol : 도수. 알코올의 농도.
+- type : 종류. 레드 와인인지 화이트 와인인지를 구분.
+
+### 4-2 각 연구가설과 관련된 탐색적 자료 분석
+```{r}
+df = read.csv("data/train.csv", header = TRUE)    # csv file을 df라는 변수에 저장
+df_red <- df %>% filter(type=='red')
+df_red %>% head
+df_white <- df %>% filter(type=="white")
+df_white %>% head
+```
+
+type별로 데이터를 나누어 분석해주기 위해 red wine 데이터를 df_red에, white wine 데이터를 df_white에 저장해주었다.
+
+```{r}
+# 상관계수를 출력해주기 위한 함수
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...){
+usr <- par("usr"); on.exit(par(usr))
+par(usr = c(0, 1, 0, 1))
+r <- abs(cor(x, y))
+txt <- format(c(r, 0.123456789), digits = digits)[1]
+txt <- paste0(prefix, txt)
+if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+pairs(df_red[2:13] %>%  sample_n(1000),
+upper.panel = panel.cor)# red wine 데이터의 변수별 산점도행렬 확인
+pairs(df_white[2:13] %>%  sample_n(1000),
+upper.panel = panel.cor)# red wine 데이터의 변수별 산점도행렬 확인
+```
+
+두 변수 사이의 상관계수와 산점도를 표시하여 분석해보았다. red wine과 white wine 모두 quality와 가장 상관계수가 높은 변수는 alcohol임을 알 수 있다.
+
+quality와 가장 상관계수가 높은 변수가 같은 것을 보고 두 종류의 와인이 특정 변수에 대해 영향을 받는 정도가 같은지 궁금해져서 이를 2번 가설에서 검정하고자 하였다.
+
+```{r fig.width = 10, fig.height=7, echo=FALSE}
+# wine의 type별 column 변수의 histogram 분포
+pl1 = df %>% ggplot(aes(x=quality)) +
+geom_histogram() +
+facet_wrap(~ type)
+pl2 = df %>% ggplot(aes(x=fixed.acidity)) +
+geom_density() +
+facet_wrap(~ type)
+pl3 = df %>% ggplot(aes(x=volatile.acidity)) +
+geom_density() +
+facet_wrap(~ type)
+pl4 = df %>% ggplot(aes(x=citric.acid)) +
+geom_density() +
+facet_wrap(~ type)
+pl5 = df %>% ggplot(aes(x=residual.sugar)) +
+geom_density() +
+facet_wrap(~ type)
+pl6 = df %>% ggplot(aes(x=chlorides)) +
+geom_density() +
+facet_wrap(~ type)
+pl7 = df %>% ggplot(aes(x=free.sulfur.dioxide)) +
+geom_density() +
+facet_wrap(~ type)
+pl8 = df %>% ggplot(aes(x=total.sulfur.dioxide)) +
+geom_density() +
+facet_wrap(~ type)
+pl9 = df %>% ggplot(aes(x=density)) +
+geom_density() +
+facet_wrap(~ type)
+pl10 = df %>% ggplot(aes(x=pH)) +
+geom_density() +
+facet_wrap(~ type)
+pl11 = df %>% ggplot(aes(x=sulphates)) +
+geom_density() +
+facet_wrap(~ type)
+pl12 = df %>% ggplot(aes(x=alcohol)) +
+geom_density() +
+facet_wrap(~ type)
+grid.arrange(pl1, pl2, pl3, pl4, pl5, pl6, pl7, pl8, pl9, pl10, pl11, pl12, nrow=4, ncol=3)
+```
+
+wine의 type별 분포를 히스토그램으로 나타내주었다.
+
+```{r fig.width= 10, fig.height=20, echo=FALSE}
+# wine의 type별 column 변수의 boxplot 분포
+box1 <-  df %>% ggplot(aes(quality, fixed.acidity, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box2 <-  df %>% ggplot(aes(quality, volatile.acidity, group=quality)) +    # red 와인의 경우 음의 상관관계
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box3 <- df %>% ggplot(aes(quality, citric.acid, group=quality)) +    # red 와인의 경우 양의 상관관계
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box4 <- df %>% ggplot(aes(quality, residual.sugar, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box5 <- df %>% ggplot(aes(quality, chlorides, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box6 <- df %>% ggplot(aes(quality, free.sulfur.dioxide, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box7 <- df %>% ggplot(aes(quality, total.sulfur.dioxide, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box8 <- df %>% ggplot(aes(quality, density, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box9 <- df %>% ggplot(aes(quality, pH, group=quality)) +
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box10 <- df %>% ggplot(aes(quality, sulphates, group=quality)) +    # red의 경우 양의 상관관계
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+box11 <- df %>% ggplot(aes(quality, alcohol, group=quality)) +    # 둘 다 대체적으로 양의 상관관계
+geom_jitter(col='gray') +
+geom_boxplot(alpha = .5, outlier.color = 'red') +
+facet_wrap(~ type)
+grid.arrange(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, nrow=6, ncol=2)
+```
+
+wine의 type별 분포를 boxplot으로 나타내주었다.
+red wine의 boxplot과 white wine의 boxplot을 보면 두 종류의 와인 모두 density와 quality 사이에 음의 상관관계가 있는 것으로 보인다. 이를 1번 가설에서 검정해 보고자 하였다.
+또한, 산도를 나타내는 fixed acidity, volatile acidity, citric acid 간에 boxplot의 경향이 모두 다르며, 위의 3번 가설 설명에 첨부한 것처럼 wine quality에 최적화된 적정 산도나 당도가 있는지 검정해 보고자 하였다. 
+```{r}
+df_white %>% ggplot(aes(x = citric.acid, y = residual.sugar, color=as.factor(quality))) +
+geom_point()
+```
+
+산점도 그림에 quality별로 서로 다른 color를 주어 전체적인 형태를 살펴보려고 하였으나 여러 색이 겹쳐 알아보기가 어렵다. mutate() 함수를 이용하여 새로운 new_quality column을 만들었다. (quality <=5 이면 new_quality='low', quality>=7이면 new_quality='high')
+이후 new_quality별로 color를 다르게 주며 두 집단 사이에 유의미한 차이가 있는지 알아보았다.
+
+```{r}
+df_white %>%
+filter(quality!=6) %>%
+mutate(new_quality = ifelse(quality > 6, 'high', 'low')) %>%
+ggplot(aes(x = citric.acid, y = residual.sugar, color=new_quality)) +
+geom_point()
+```
+
+우선 citric.acid는 high group이 확실히 low group보다 전체적으로 안쪽 범위에 몰려 있는 것을 확인할 수 있다.
+residual.sugar도 전체적으로 high group이 편차가 더 낮은 듯 하다.
+
+### 4-3 가설 검정
+
+#### 가설 1
+우리는 회귀분석을 이용하여 와인의 quality가 density에 영향을 많이 받을 것이라는 가설을 검정하였다. 
+```{r}
+# H0 : 와인의 quality는 density에 영향을 받지 않는다.
+# H1 : H0이 옳지 않다.
+lm<-lm(quality~density, data = df)
+summary(lm)
+plot(lm)
+plot(quality~density, data = df)
+``` 
+ 
+위의 회귀분석 결과를 보았을 때 우선 p 값이 0.05보다 작으므로 유의수준을 5%로 설정했다면 통계적으로 유의미한 결과가 나왔다고 볼 수 있다. R 제곱 값이 약 0.08이므로 density가 quality의 8%밖에 설명하지 못한다는 것을 알 수 있다. 만약 density와 quality가 선형관계를 띤다면 음의 상관관계를 가진다. p값으로 미루어 보아 density는 quality에 큰 영향을 주지 않는다는 것을 알 수 있고, R 제곱 값을 보았을 때 density로는 quality의 일부분 밖에 설명하지 못한다는 것을 알 수 있었다.
+
+또한, 회귀분석을 하기에 적합했는지 확인하기 위하여 회귀분석 방법 설명에 나와 있는 4가지의 조건 만족 여부를 확인해 보았다. 애초에 자료의 선형성 조건을 가정한 가설이므로, 아래 3가지 조건을 확인하였다.
+
+1. 잔차의 독립성 : 각 와인에 대한 데이터는 비뉴 베르드라는 포르투갈의 와인에서 추출했지만 단순임의추출 되었는지의 여부를 확인하지 못하여 Durbin-Watson 검정으로 확인하였다.
+
+Durbin-Watson 검정
+```{r}
+durbinWatsonTest(resid(lm))
+```
+
+검정통계량이 독립변수가 1개일 때의 상한인 1.69보다 큰 약1.98 이므로 잔차의 독립성은 충족된다.
+
+2. 반응변수, 잔차의 정규성 : Q-Q plot에서 점이 직선 상에서 벗어나 있으면 정규성이 위반된 것으로 보는데 Q-Q plot에서 점들이 대체로 직선 위에 존재하므로 정규성을 띤다. 이 방법은 주관적일 수 있으므로 또 다른 정규성 검정인 일표본 Kolmogorov-Smirnov 검정을 진행하였다.
+
+Kolmogorov-Smirnov 검정 (잔차의 정규성 여부 확인)
+```{r}
+ks.test(resid(lm), "pnorm",mean=mean(resid(lm)),sd= sd(resid(lm)))
+```
+p값이 유의수준 5%에서 0.05보다 훨씬 작은 값이 나왔으므로 잔차의 정규성을 만족하지 않는다.
+
+3. 반응변수의 등분산성 : 등분산성은 residuals vs fitted 분포를 봐서 시각적으로 확인이 가능한데 산점도를 보면 산점도 상에서 점들이 균일하게 분포되어 있는 것을 보아 등분산성을 가정할 수는 있지만 부정확할 가능성이 존재한다.
+
+#### 가설 2
+와인의 quality가 각 요소들의 linear model로 표현된다는 가정 하에, '와인의 type별로 와인의 quality에 영향을 주는 변수가 달라질 것이다.'라는 가설을 검정하였다. 먼저 index와 type을 제외한 나머지 변수가 모두 quality에 영향을 주는 linear model을 만들고, backward 변수선택법을 사용해 유의하지 않은 변수를 제거해주는 식으로 설명변수를 선택해 주었다. 이 과정을 red wine과 white wine에 대해서 수행한 후, 두 type간에 영향을 미치는 변수들이 다른지 여부를 살펴보았다.
+
+```{r}
+df_red_lm <- df_red[, c(2:13)]  # Exclude 'index', 'type' column
+split = sample.split(df_red_lm$quality, SplitRatio = 0.8)
+train_red = subset(df_red_lm, split == TRUE)
+test_red = subset(df_red_lm, split == FALSE)
+lm_red_ori <- lm(quality~ ., data = train_red) # balance 값이 들어가지 않은 기본 linear model
+lm_red_ori_step <- step(lm_red_ori, direction = "backward")
+summary(lm_red_ori_step)
+```
+
+```{r}
+df_white_lm <- df_white[, c(2:13)]  # Exclude 'index', 'type' column
+split = sample.split(df_white_lm$quality, SplitRatio = 0.8)
+train_white = subset(df_white_lm, split == TRUE)
+test_white = subset(df_white_lm, split == FALSE)
+lm_white_ori <- lm(quality~ ., data = train_white)    # balance 값이 들어가지 않은 기본 linear model
+lm_white_ori_step <- step(lm_white_ori, direction = "backward")
+summary(lm_white_ori_step)
+```
+
+분석 결과 red와 white 모두에서 유의하게 나온 변수는 volatile.acidity, free.sulfur.dioxide, pH, sulphates, alcohol이었고 red에만 유의하게 나온 변수는 citric.acid, chlorides, total.sulfur.dioxide, white에만 유의하게 나온 변수는 fixed.acidity, residual.sugar, density가 있다.
+
+#### 가설 3
+- https://blog.naver.com/hitejinrovin/220923836914에 따르면, 와인의 품질은 균형(balance)에 따라 좌우된다. 구체적으로, 너무 많지도 부족하지도 않은 적당한 농도의 당도와 산도, 알코올 농도를 가진 와인이 품질이 좋다고 한다. 특정 와인의 balance를 정량적으로 계산하는 방법은 찾을 수 없었으나, 여기서는 당소, 산도의 값과 그 요소들의 평균까지의 거리가 balance를 나타낼 것이라는 가정 하에 회귀분석을 진행하였다. 여기서 balance를 구하는 방법은 다음과 같다.
+
+balance = ((당도 - (당도의 평균))^2 + (산도 - (산도의 평균))^2 + (알코올 - (알코올의 평균))^2)^(1/2) 
+이는 거리를 유클리드 기하로 계산한 결과이다.
+
+```{r}
+df_1 <- df %>% mutate(balance = sqrt((residual.sugar - mean(residual.sugar))^2 + (citric.acid - mean(citric.acid))^2) + (alcohol - mean(alcohol))^2)  # include new 'balance' column
+df_1 <- df_1 %>% mutate(residual.sugar = scale(residual.sugar, center = TRUE, scale = FALSE), citric.acid = scale(citric.acid, center = TRUE, scale = FALSE))  # centering variable to avoid multicollinearity
+lm_1 <- lm(quality~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol + balance, data = df_1)
+summary(lm_1)
+```
+
+summary 결과 balance 값이 유의하지 않다고 나왔다. 
+
+### 4-4 linear모델의 Accuracy 확인 
+우리는 위의 가설들에서 linear모델을 사용했는데, '과연 linear model이 와인의 quality를 평가하는 데(accuracy라는 기준을 가지고) 적절한 모형인가?' 라는 의문이 들었다. 이를 살펴보기 위해 linear model로 와인의 quality를 추정한 뒤 예측 정확도를 구해보는 작업을 해 보았다.
+```{r}
+makeAcc <- function(pred, ans){   # 예측 결과값이 담긴 벡터 pred, 실제 정답이 담긴 벡터 ans을 인수로 받아 정확도를 return해주는 함수
+  cnt <- 0
+  for (i in 1:length(pred)){
+    if (pred[i] == ans[i]) {
+      cnt <- cnt + 1
+    }
+  }
+  return (cnt / length(pred))
+}
+```
+
+```{r}
+lm_red_ori_answer = sapply(lm_red_ori %>% predict %>% unname, round)
+makeAcc(lm_red_ori_answer, df_red$quality)
+lm_white_ori_answer = sapply(lm_white_ori %>% predict %>% unname, round)
+makeAcc(lm_white_ori_answer, df_white$quality)
+```
+
+전체적인 정확도는 약 0.4로 높지 않았다. 따라서 우리는 model의 Acuuracy를 높이고자 비선형적 모델인 랜덤포레스트 모형을 적용하여 linear model과의 성능차이를 분석하였다. 
+
+### 4-5 랜덤포레스트 모형
+```{r, message = FALSE,warning = FALSE}
+
+set.seed(5497)
+fit <- randomForest(as.factor(quality) ~ .,data=train_red)
+prediction <- predict(fit, test_red[,-which(names(test_red)=="quality")])
+table(test_red$quality, prediction) #Confusion matrix
+error <- mean(test_red$quality != prediction)
+paste('Accuracy',round(1-error,4)) 
+
+fit <- randomForest(as.factor(quality) ~ .,data=train_white)
+prediction <- predict(fit, test_white[,-which(names(test_white)=="quality")])
+table(test_white$quality, prediction) #Confusion matrix
+error <- mean(test_white$quality != prediction)
+paste('Accuracy',round(1-error,4)) 
+```
+
+Accuracy는 약 0.66 ~ 0.70정도로 linear 모델보다 정확도가 올라갔음을 확인할 수 있었다. 
+
+## 5) 결론
+가설 1에서는 회귀분석을 이용하여 와인의 quality와 density사이의 관계를 살펴보고, 회귀분석의 적합성을 살펴보았다. 회귀분석의 적합성을 살펴본 결과, 정규성을 만족하지 않고 등분산성이 완전히 확보되지 않았기 때문에 1번 가설에서는 회귀분석의 결과가 정확하지 않을 수 있다. 
+가설 2에서는 Linear Model임을 가정하고 backward selection을 사용하여 red wine과 white wine 중 어느 한 그룹에만 영향을 미치는 유의미한 변수를 확인하였다. @@ -288,6 +308,16 @@ summary(lm_white_ori_step) 결과를 분석해 본다면, 우선 white에만 residual.sugar가 품질에 영향을 미친다는 것은 화이트 와인을 마시는 소비자가 상대적으로 당도를 더 중요하게 고려한다는 것으로 설명할 수 있을 것 같다. https://www.asiae.co.kr/article/2018060806513888770 에 의하면, 화이트와인은 레드와인과 달리 껍질이나 씨에서 색소나 탄닌을 수출하는 과정이 없다. 따라서 화이트와인에 대한 소비자의 요구 또한 신선하고, 너무 떫거나 쓰지 않는 것으로, 가볍고 산뜻한 와인을 좋아한다고 한다. 이에 따라 결과를 해석할 수 있을 것이다.
+가설 3에서는 balance를 정의한 뒤, beta 값의 유의한지 아닌지를 확인하여 산도와 당도가 와인의 quality에 영향을 미치는지 확인하였다. summary 결과 balance값이 유의하지 않다고 나왔는데, 정확한 원인은 알 수 없으나 추청한다면 balance가 위의 간단한 식으로 구해지지 않을 수 있다. 출처로 제시한 사이트를 참고하면, 와인의 balance는 단순히 당도, 산도, 알코올 뿐만 아니라 탄닌, 과일 풍미가 농축된 정도와 같은 여러 요인들에 영향을 받는다. 이러한 점이 가설검정을 할 때 사용된 balance를 구하는 데에는 고려되지 않았다. 또한 각 요소별로 가중치가 다르다거나, 더 복잡한 식으로 balance가 결정될 가능성 역시 존재한다. 이러한 점에서 구한 balance 수치가 와인의 quality를 결정하는 데 적절한 요인이 아닐 수 있다.
+linear 모델의 Accuracy를 확인한 결과 40%로 그리 높지 않았는데, 이는 와인의 quality가 linear model을 따르지 않을 수 있으며, OLS를 최소화하는 방식으로 제작된 linear model이 Acuuracy를 최대로 높이는 문제의 의도와 차이가 있어서 발생하는 문제라고 생각하였다. 또한, LM 모형은 분류 문제에 적용할 없는데 이 문제는 분류 문제이기에 한계가 있다. 따라서, 이러한 문제를 해결함으로써 Accuracy를 높이고자 랜덤 포레스트 모형을 적용했으며, 그 결과 정확도가 높아졌음을 확인할 수 있었다. 
+
+## 6) 각 조원이 보고서 및 발표에 기여한 바
+조용수 : 2, 3번 가설 제시 및 검정, 탐색적 자료 분석, 경과보고서 수합, 발표 자료 제작 및 발표, 최종보고서 정리
+
+박지우 : 1번 가설 제시, 경과보고서 수합, 발표 자료 제작 및 발표
+
+신대형 : 2번 가설 검정, 최종보고서 정리
+
+전재현 : 1번 가설 검정, 최종보고서 정리

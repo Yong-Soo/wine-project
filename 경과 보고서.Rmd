@@ -2,10 +2,14 @@
 title: "경과보고서_8조"
 output: 
   pdf_document:
-    latex_engine: xelatex
-  html_document: default
+     latex_engine: xelatex
 mainfont: NanumGothic
 ---
+
+```{r, include = FALSE}
+options(tinytex.verbose = TRUE)
+```
+
 
 ```{r message = FALSE, echo = FALSE}
 library(ggplot2)
